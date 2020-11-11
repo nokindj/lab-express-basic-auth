@@ -1,3 +1,17 @@
 <h1>{{title}}</h1>
 <p>Welcome to {{title}}</p>
+
+
+{{#if user}}
+<!-- if user is logged in -->
+<p>Welcome {{user.username}}</p>
+<!-- precisamos de usar o user.username pq já fizemos login e a apartir daí chama-mos user.username. -->
+<form method="POST" action="logout">
+    <button type="submit">Logout</button>
+</form>
+<a href="/private">Private</a>
+{{else}}
 <a href="/signup">Signup</a>
+<a href="/login">Login</a>
+
+{{/if}}

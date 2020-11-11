@@ -37,6 +37,47 @@ router.post("/signup", (req, res) => {
       })
 })
 
+router.get("/login", (req, res) => {
+  res.render("auth/login")
+});
+
+router.post("/login", (req, res) => {
+  const { username, password } = req.body;
+  if(!username || !password) {
+    res.render("auth/login", {
+      errorMessage: "Please enter both username and password"
+    });
+    return; // o return aqui pára a função se o if statement for verificado.
+            // se o if for verificado ele continua e segue para a função de baixo 
+            // neste caso é o User.findOne()
+  }
+  User.findOne({"username": username})
+  .then((user) => {
+    if(!user) {
+      res.render("auth/login", {
+        errorMessage: "Invalid login"
+      }) // user doesnt exist in the mongoDB
+      return;
+    }
+    if (bcrypt.compareSync(password, user.password)) { // the user.password is the text written in the input form and its comparing to the password chosen by the user.
+      // Logged in sucessfully
+      req.session.currentUser = user; // this is for implementing the sessions if Im logged in 
+      res.redirect("/")
+     // res.render("index", {user});
+
+    } else {
+      // Passwords don't match
+      res.render("auth/login", {
+        errorMessage: "Invalid login"
+      })
+    }
+  })
+});
+
+router.post("/logout", (req, res) => {
+  req.session.destroy();
+  res.redirect("/");
+})
 
 
   module.exports = router;
